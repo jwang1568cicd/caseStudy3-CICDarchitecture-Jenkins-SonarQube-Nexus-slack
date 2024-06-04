@@ -1,0 +1,90 @@
+We will focus on few things here:
+1. Jenkins CLI
+
+Once the Jenkins is installed, follow the online link to download the jenkins-cli.jar : http://172.16.11.5:8080/manage/cli/ and related documentation.
+
+The following files are kept as references
+
+List the jenkins pipeline and start the build with CLI 
+java -jar jenkins-cli.jar -auth @jwang1568token -s http://172.16.11.5:8080/ help 2>&1 | tee jenkins-cli.txt
+java -jar jenkins-cli.jar -s http://172.16.11.5:8080/ -auth @jwang1568token list-jobs
+java -jar jenkins-cli.jar -s http://172.16.11.5:8080/ -auth @jwang1568token get-job pipelineUT
+java -jar jenkins-cli.jar -s http://172.16.11.5:8080/ -auth @jwang1568token help
+java -jar jenkins-cli.jar -s http://172.16.11.5:8080/ -auth @jwang1568token build pipelineUT
+java -jar jenkins-cli.jar -auth @jwang1568token -s http://172.16.11.5:8080/ safe-restart
+
+
+jenkins-cli.jar - the downloaded client file
+
+jenkins-cli.txt - The available CLI list
+
+jenkins-installed-plugins.txt - The list of installed plugins
+
+jwang1568token - API token file; you need to setup your own.
+
+pipelineUT - buld job
+
+2. The REST API
+Follow the REST API link or the session you are using:http://172.16.11.5:8080/job/pipelineUT/api/
+
+Example to retrive the user info:
+curl -s -u admin:admin http://localhost:8080/user/admin/api/json | jq
+or
+specific userName
+root@jenkins:~/proj# curl -s -u admin:admin http://localhost:8080/user/admin/api/json | jq .fullName
+"jwang1568cicd"
+root@jenkins:~/proj#
+
+
+root@jenkins:~/proj# curl -s -X GET -u admin:admin http://localhost:8080/user/admin/api/json | jq .fullName
+"jwang1568cicd"
+root@jenkins:~/proj#
+
+2.1 Example with authentication token:w
+root@jenkins:~/proj# curl -s http://admin:113aa6c0134e85320a1fe719e62f056598@172.16.11.5:8080/job/pipelineAsACode/description
+PipelineAsACode is based on github repository: https://github.com/jwang1568cicd/vprofile-web-app.git
+
+This project detail is documented in caseStuday3:https://github.com/jwang1568cicd/caseStudy3-CICDarchitecture-Jenkins-SonarQube-Nexus-slack.gitroot@jenkins:~/proj#
+
+
+3. The GIT and Jenkins pipeline integration
+here is the github webhook and REST link:https://docs.github.com/en/webhooks/about-webhooks
+the Github webhook link is available at https://docs.github.com/en/webhooks.
+
+First, the pipeline needs to enable the Build Trigger option "GitHub hook trigger for GITScm polling".
+Secondly, the corresponding Github project specific webhoot setting needs to be enabled with notification back to the Jenkins server. 
+
+4. The Sonarqube quality gate and Jenkins pipeline webhook integration.
+here is the Sonarqube online webhook document:http://172.16.11.3/documentation/project-administration/webhooks/
+The Jenkins' pipeline will determine the execution status based on it.
+here is the pipeline example waiting for the QualityGate execution status:
+        stage("Quality Gate") {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = don't
+                    waitForQualityGate abortPipeline: true
+                }
+            }
+        }
+
+
+
+5. The slack and Jenkins pipeline webhook integration
+The slack incoming webhoot link is available at https://api.slack.com/messaging/webhooks
+This usage is posting the Jenkins build status to specific slack channel or group uses.
+First, here is the example of Jenkins pipeline stage setting where message was posted to #devops4 channel. The channel binding is tied with slack workspace and 
+    post {
+        always {
+            echo 'Slack Notifications.'
+            slackSend channel: '#devops4',
+                color: COLOR_MAP[currentBuild.currentResult],
+                message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \n More info at: ${env.BUILD_URL}"
+        }
+            
+    }
+
+secondly, once you sign into the slack workspace. Find the Slack incoming webhooks from Slack App Directory, whose link is at https://api.slack.com/messaging/webhooks.  
+Finally, there is a "test connection" button in Slack section of the Jenkins Dashboard->Manage Jenkins-> System page :w
+for webhoot setup verification where you should see test message posted on slack channel and return status on Jenkins dashboard.
+

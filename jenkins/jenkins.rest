@@ -1,0 +1,7 @@
+Follow the online link for REST API to start : http://172.16.11.5:8080/job/PipelineAsACode/api/
+
+root@jenkins:~/proj# curl -s http://admin:113aa6c0134e85320a1fe719e62f056598@172.16.11.5:8080/job/pipelineAsACode/description
+PipelineAsACode is based on github repository: https://github.com/jwang1568cicd/vprofile-web-app.git
+
+This project detail is documented in caseStuday3:https://github.com/jwang1568cicd/caseStudy3-CICDarchitecture-Jenkins-SonarQube-Nexus-slack.gitroot@jenkins:~/proj#
+

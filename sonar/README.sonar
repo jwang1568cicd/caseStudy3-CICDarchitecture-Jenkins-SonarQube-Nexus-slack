@@ -1,0 +1,20 @@
+This case study is based on Assignment3 as foundation with the following enhancements:
+
+1. The sonarqube REST API is available at https://docs.sonarsource.com/sonarqube/latest/extension-guide/web-api/
+
+2. The note of webhook notifcation setup.
+Configure a webhook in your SonarQube server pointing to <your Jenkins instance>/sonarqube-webhook/
+Use withSonarQubeEnv step in the Jenkins pipeline (so that SonarQube taskId is correctly attached to the pipeline context).
+Scripted pipeline example:
+jenkins-ci-webhook : http://http://172.16.11.5:8080/sonarqube-webhook/
+
+node {
+  stage('SCM') {
+    git 'https://github.com/foo/bar.git'
+  }
+  stage('SonarQube analysis') {
+    withSonarQubeEnv('My SonarQube Server') {
+      sh 'mvn clean package sonar:sonar'
+    } // submitted SonarQube taskId is automatically attached to the pipeline context
+  }
+}

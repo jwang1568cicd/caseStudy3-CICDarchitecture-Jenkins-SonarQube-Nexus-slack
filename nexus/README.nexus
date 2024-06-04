@@ -1,0 +1,110 @@
+This case study is based on Assignment3 as foundation with the following enhancements.
+
+1. The Nexus CLI and REST API link is available at https://nexus3-cli.readthedocs.io/en/latest/cli.html
+2. The REST API examples:
+
+[root@nexus proj]# curl -sSi http://localhost:8081/service/rest/v1/status
+HTTP/1.1 200 OK
+Date: Mon, 27 May 2024 00:15:01 GMT
+Server: Nexus/3.68.1-02 (OSS)
+X-Content-Type-Options: nosniff
+Content-Length: 0
+
+[root@nexus proj]# curl -sSi http://localhost:8081/service/rest/v1/repositories
+HTTP/1.1 200 OK
+Date: Mon, 27 May 2024 00:15:08 GMT
+Server: Nexus/3.68.1-02 (OSS)
+X-Content-Type-Options: nosniff
+Content-Type: application/json
+Content-Length: 1263
+
+[ {
+  "name" : "nuget-hosted",
+  "format" : "nuget",
+  "type" : "hosted",
+  "url" : "http://localhost:8081/repository/nuget-hosted",
+  "attributes" : { }
+}, {
+  "name" : "nuget-group",
+  "format" : "nuget",
+  "type" : "group",
+  "url" : "http://localhost:8081/repository/nuget-group",
+  "attributes" : { }
+}, {
+  "name" : "maven-snapshots",
+  "format" : "maven2",
+  "type" : "hosted",
+  "url" : "http://localhost:8081/repository/maven-snapshots",
+  "attributes" : { }
+}, {
+  "name" : "maven-public",
+  "format" : "maven2",
+  "type" : "group",
+  "url" : "http://localhost:8081/repository/maven-public",
+  "attributes" : { }
+}, {
+  "name" : "nuget.org-proxy",
+  "format" : "nuget",
+  "type" : "proxy",
+  "url" : "http://localhost:8081/repository/nuget.org-proxy",
+  "attributes" : {
+    "proxy" : {
+      "remoteUrl" : "https://api.nuget.org/v3/index.json"
+    }
+  }
+}, {
+  "name" : "maven-releases",
+  "format" : "maven2",
+  "type" : "hosted",
+  "url" : "http://localhost:8081/repository/maven-releases",
+  "attributes" : { }
+}, {
+  "name" : "maven-central",
+  "format" : "maven2",
+  "type" : "proxy",
+  "url" : "http://localhost:8081/repository/maven-central",
+  "attributes" : {
+    "proxy" : {
+      "remoteUrl" : "https://repo1.maven.org/maven2/"
+    }
+  }
+} ][root@nexus proj]#
+
+[root@nexus ~]# curl -s http://localhost:8081/service/rest/v1/repositories | jq .[].name
+"nuget-hosted"
+"nuget-group"
+"maven-snapshots"
+"maven-public"
+"nuget.org-proxy"
+"maven-releases"
+"maven-central"
+"vprofile-repo"
+[root@nexus ~]# curl -s http://localhost:8081/service/rest/v1/repositories | jq .[7]
+{
+  "name": "vprofile-repo",
+  "format": "maven2",
+  "type": "hosted",
+  "url": "http://localhost:8081/repository/vprofile-repo",
+  "attributes": {}
+}
+[root@nexus ~]#
+
+
+Nexus cli https://help.sonatype.com/en/sonatype-cli-binaries.html
+http://172.16.11.2:8081/#admin/system/api
+
+yum install epel-release -y
+yum install jq -y
+jq --version
+
+[root@nexus proj]# curl -s http://localhost:8081/service/rest/v1/repositories | jq -r '.[] | .name'
+nuget-hosted
+nuget-group
+maven-snapshots
+maven-public
+nuget.org-proxy
+maven-releases
+maven-central
+[root@nexus proj]#
+
+

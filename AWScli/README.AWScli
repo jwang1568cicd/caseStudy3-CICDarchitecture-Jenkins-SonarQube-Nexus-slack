@@ -1,0 +1,128 @@
+Here are few things for the AWS cli:
+1. Start from here is your environment is not ready for AWS cli yet; https://aws.amazon.com/cli/. Once aws cli is ready, please make sure latest version is installed.
+
+$ aws --version
+aws-cli/2.15.60 Python/3.11.8 Windows/10 exe/AMD64
+
+You will need to setup once with aws configure bsaed on your IAM setting.
+
+$ aws iam list-access-keys
+{
+    "AccessKeyMetadata": [
+        {
+            "UserName": "jerryw",
+            "CreateDate": "2024-04-29T16:46:59+00:00"
+        }
+    ]
+}
+2. ***example for ssh key pari creation and verification
+$ aws ec2 create-key-pair \
+   --key-name  caseStudy3Jenkinskey \
+   --query 'KeyMaterial' --output text > ~/.ssh/caseStuday3Jenkinskey
+
+$ aws ec2 help | grep -i pair
+* create-key-pair
+* delete-key-pair
+* describe-key-pairs
+* import-key-pair
+
+CICD-Student@DESKTOP-FNUA4LH MINGW64 ~
+$ aws ec2 describe-key-pairs
+{
+    "KeyPairs": [
+        {
+            "KeyPairId": "key-07f264760b9b2bd21",
+            "KeyFingerprint": "9d:dd:9e:2f:5f:77:5d:b5:aa:fb:c9:51:3e:98:8b:21:aa:0e:9b:44",
+            "KeyName": "casestudy3JenkinsKey",
+            "KeyType": "rsa",
+            "Tags": [],
+            "CreateTime": "2024-05-31T16:31:23.307000+00:00"
+        }
+    ]
+}
+
+3. Example of EC2 instance creation and verification
+CICD-Student@DESKTOP-FNUA4LH MINGW64 ~
+$ aws ec2 create-security-group \
+>     --group-name caseStuday3CLIsg \
+>     --description "caseStuday3 AWS ec2 CLI SG" \
+>     --tag-specifications 'ResourceType=security-group,Tags=[{Key=Name,Value=demo-sg}]' \
+>     --vpc-id "vpc-0194700319f05b050"
+{
+    "GroupId": "sg-03b8029c4b8a9f42f",
+    "Tags": [
+        {
+            "Key": "Name",
+            "Value": "demo-sg"
+        }
+    ]
+}
+
+CICD-Student@DESKTOP-FNUA4LH MINGW64 ~
+$ aws ec2 describe-security-groups
+{
+    "SecurityGroups": [
+        {
+            "Description": "default VPC security group",
+            "GroupName": "default",
+            "IpPermissions": [
+                {
+                    "IpProtocol": "-1",
+                    "IpRanges": [],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": [],
+                    "UserIdGroupPairs": [
+                        {
+                            "GroupId": "sg-0e8b1b7f764f30f4a",
+                            "UserId": "339713006431"
+                        }
+                    ]
+                }
+            ],
+            "OwnerId": "339713006431",
+            "GroupId": "sg-0e8b1b7f764f30f4a",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": [],
+                    "UserIdGroupPairs": []
+                }
+            ],
+            "VpcId": "vpc-0194700319f05b050"
+        },
+        {
+            "Description": "caseStuday3 AWS ec2 CLI SG",
+            "GroupName": "caseStuday3CLIsg",
+            "IpPermissions": [],
+            "OwnerId": "339713006431",
+            "GroupId": "sg-03b8029c4b8a9f42f",
+            "IpPermissionsEgress": [
+                {
+                    "IpProtocol": "-1",
+                    "IpRanges": [
+                        {
+                            "CidrIp": "0.0.0.0/0"
+                        }
+                    ],
+                    "Ipv6Ranges": [],
+                    "PrefixListIds": [],
+                    "UserIdGroupPairs": []
+                }
+            ],
+            "Tags": [
+                {
+                    "Key": "Name",
+                    "Value": "demo-sg"
+                }
+            ],
+            "VpcId": "vpc-0194700319f05b050"
+        }
+    ]
+}
+
